@@ -29,3 +29,16 @@ While the FSD50K dataset has plenty of sound samples, it cannot be employed for 
 Figure 3 demonstrates the recording process. We placed the microphone in a distance of either 1 meter or 2 meters away from the speaker. To properly record the audio samples, we used a distributed client-server architecture that would notify the microphone client when the speaker would start playing a sample.
 
 ![distance](https://user-images.githubusercontent.com/34604921/152852520-7f0a2ece-4b9c-43a8-b2c9-f369775e68e8.png " Draft of the recording process. A PC connected to a speaker plays the samples, while a laptop records it with a microphone from a certain distance d, in our case 1 and 2 meters. The PC signals the laptop when it starts and stops playing each sample over a socket connection, so the laptop can start and stop recording its samples accordingly.")
+
+It could be argued that it would have been easier to play and record the sound from the same computer. However this was infeasible, as we didn't have the proper equipment necessary to accomplish this.
+
+After the recording work was done, our final distance dataset contained approximately 3000 audio samples from over 100 different classes.
+### Data Preprocessing
+#### Polishing the dataset
+Polishing the dataset
+During the creation of the dataset, we noticed that the distributed client-server architecture would sometimes start recording too late, as some audio files were so short that the laptop didn't receive the signal to start recording in time. Because recording again was deemed wasteful of our precious time, we decided to simply filter out the non-existent audio samples. Our dataset was still over 2500 audio samples large even after eliminating the faulty samples.
+
+As mentioned before, a single audio sample could have multiple classes. While this was not an issue with distance prediction, it provided an extra challenge in the classification part of the project. A first step to manage this was to make all audio samples have the same amount of classes. Figure 4 shows an example of the process we used to accomplish this.
+![figure prep](https://user-images.githubusercontent.com/34604921/152852972-0c77811e-a0cc-4258-a983-f30962c30519.png "Figure 4: Adapting the dataset so that the amount of classes is the same for each audio sample")
+
+
