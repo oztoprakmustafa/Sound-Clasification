@@ -15,4 +15,5 @@ PCM is a format for storing uncompressed audio signals. It simply contains an ar
 A spectrogram is a visualiziaton of the frequency spectrum of a signal over time. The frequency spectrum represents the signal strength of the various frequencies present in the signal. It can be calculated by applying a fourier transform to the signal.
 The spectogram is depicted as a heat map, which means the intensity at a specific frequency and time is expressed through the color.
 
-![](clarinette_spectogramhttps://user-images.githubusercontent.com/34604921/152850684-4f148ff4-99f2-4237-95e0-6e5c88164eb2.png)"Spectrogram of a recording of a clarinet playing a note. The bottom line is at the frequency of the keynote, the higher lines are the harmonics. The clarinet starts playing at 0.4 seconds")
+
+![spectogram](https://user-images.githubusercontent.com/34604921/152851220-10f18d09-4c90-4a9f-b125-82f6b19d7647.png "Spectrogram of a recording of a clarinet playing a note. The bottom line is at the frequency of the keynote, the higher lines are the harmonics. The clarinet starts playing at 0.4 seconds")
