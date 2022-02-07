@@ -17,3 +17,15 @@ The spectogram is depicted as a heat map, which means the intensity at a specifi
 
 
 ![spectogram](https://user-images.githubusercontent.com/34604921/152851220-10f18d09-4c90-4a9f-b125-82f6b19d7647.png "Spectrogram of a recording of a clarinet playing a note. The bottom line is at the frequency of the keynote, the higher lines are the harmonics. The clarinet starts playing at 0.4 seconds")
+### MFCC (Mel-Frequency Cepstral Coefficients)
+For audio analysis, it often makes sense to extract certain features from the raw audio signal, like the signal energy or the spectogram. As a feature, the MFC coefficients represent the entire frequency spectrum compactly with few values (e.g. 40), which approximates the human auditory system more closely. This has proven useful for applications like speech or song recognition.
+## The Dataset
+### The dataset
+For our project, we used an [FSD50k Zenodo](https://zenodo.org/record/4060432) audio dataset, commonly used in kaggle competitions. It has over 50k audio samples with 200 classes, one audio sample having multiple classes. The FSD50k dataset would be used for the classification part of this project.
+
+### Creating our own dataset
+While the FSD50K dataset has plenty of sound samples, it cannot be employed for distance prediction on its own. Hence using the FSD50k dataset, we recorded approximately 3000 audio samples from different distances in a room. Note that the room wasn't soundproof, therefore some background noise was inevitably included.
+
+Figure 3 demonstrates the recording process. We placed the microphone in a distance of either 1 meter or 2 meters away from the speaker. To properly record the audio samples, we used a distributed client-server architecture that would notify the microphone client when the speaker would start playing a sample.
+
+![distance](https://user-images.githubusercontent.com/34604921/152852520-7f0a2ece-4b9c-43a8-b2c9-f369775e68e8.png " Draft of the recording process. A PC connected to a speaker plays the samples, while a laptop records it with a microphone from a certain distance d, in our case 1 and 2 meters. The PC signals the laptop when it starts and stops playing each sample over a socket connection, so the laptop can start and stop recording its samples accordingly.")
