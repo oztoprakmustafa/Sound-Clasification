@@ -59,6 +59,58 @@ For testing our ANC, we took one of the longer noisy signals from our dataset an
 ![ANC_difference](https://user-images.githubusercontent.com/34604921/152853840-c16173cd-6298-473b-8499-a641a34f5cf2.png "igure 5: Original vs. denoised signal with use of ANC")
 
 Applying this denoising technique indeed resulted in less interference for some samples. However due to the big diversity in our dataset the findings were inconsistent. What worked for one kind of signal effected another kind of signal negatively. Hence we ultimately decided not to deploy any denoising techniques for now and instead let our network deal with the background noise. In future work, handling denoising properly could lead to accuracy improvements.
+## Creating the Network
+### Model Implementation
+Due to having two different problem statements, we opted on using two different models, one for classification and the other for distance prediction. In this section, we will discuss the two models that we implemented as well as their performance.
+#### Python framework
+We are using Keras as the deep learning library to construct our network.
+
+For audio processing, Librosa turned out to be a suitable library. It provides several functions to extract features from audio data, e.g. for creating spectograms, calculating the MFCCs or performing a fourier transform.
+
+Other libraries, such as SKlearn and Pandas, helped with the data processing and K-Fold model fitting.
+#### Network Input
+The audio source prediction part of this project could have easily boiled down to image classification by using some form of image representation of the audio samples, for example a picture of the raw audio signal or the corresponding spectrogram. Figure 6 shows some of these raw audio inputs.
+
+
+![figure example](https://user-images.githubusercontent.com/34604921/152854490-52331ad8-653d-48fd-bae9-ac0c79c91ec8.png "Figure 6: Some samples of the dataset depicted as pictures of their raw audio signals")
+Instead, however, for our first try we opted to extract the MFCC features using Librosa. Librosa returns the MFCC features from a signal over time in an array, which we can then use for classification. As MFCC is a quite compact representation of an audio signal, training is a lot faster due to the network having to process a smaller amount of data.
+
+For the distance part of our project, we decided to try a different approach. We created a spectogram of each audio sample and indeed turned the distance prediction into an image classification problem. There are primarly two reasons for adopting this approach:
+
+The previous approach yielded petty results in terms of accuracy.
+We wanted to compare feature extraction and image classification approaches.
+#### Classification
+For the classification, we used a classic Convolution Neural Network (CNN). This decision was inspired by a popular blog from a kaggle competition called ["Beginners guide to audio data"](https://www.kaggle.com/fizzbuzz/beginner-s-guide-to-audio-data/).
+
+The convolutional network model can be seen in Figure 7.
+![class1](https://user-images.githubusercontent.com/34604921/152854736-00f0e57c-3276-4b78-ad82-96b160f71b41.png "Figure 7: The initial CNN model for the classification task")
+This model, however, proved to perform very poorly, barely hitting 1% validation accuracy, even though the training accuracy proved to be at 28%. We believe the cause for this was the size of the dataset (2500) being far too small compared to the abundance of classes, leaving little room for error.
+##### Tackling multi-label classification
+In addition to the problems mentioned above, this model wasn't suited to predict multiple labels. Jason Brownlee and his guide "Multi-Label Classification of Satellite Photos of the Amazon Rainforest" 5 gave us an idea: what we can do is map all n labels to integers and store an n-element vector for each audio file. This vector contains 0 for labels that don't apply to the audio file, and 1 for labels that do. This corresponds to one hot encoding. After utilizing this technique, the predicting process was quite straightforward, resembling an Image Classification task.
+
+##### Evaluating the performance
+As we are dealing with a multi-class classification task, commonly used performance metrics for binary classification tasks aren't suitable. As an example for binary classifier metrics, the classic F1 score calculates the mean of precision and recall. Here, the precision describes how good the model is at predicting the positive outcome, and the recall quantifies the model's ability to predict positive samples as positive. For predicting multiple classes however, this is inapplicable as there is no clear positive or negative class.
+
+The so-called F-Beta metric overcomes this by first calculating prediction and recall for each class in a one vs rest manner and then averaging them over all classes. A constant Beta is utilized in order to weigh precision and recall differently. We are using the common choice of two for Beta, which makes the recall valued twice as highly as the precision. The F-Beta metric is calculated as follows:
+
+F-Beta = (1 + Beta^2) x (precision x recall) / (Beta^2 x precision + recall)
+
+Figure 8 shows the results as two graphs, the cross entropy loss and F-Beta. This figure explains that the network is quite heavily overfitting the data, however the F-Beta value is close to the ideal, signifying the incredible boost in performance compared to the previous model.
+
+![second_model](https://user-images.githubusercontent.com/34604921/152855106-b2b9a2a6-0526-4cf1-bf63-13e66b68a208.png "Figure 8: Evaluating the training performance of the improved classification network")
+#### Distance
+Regarding the distance prediction model, we were fitting it with the images of all the audio spectograms. As for the model design itself, we used a new concept previously unknown to us: a CRNN (convolutional recurrent neural network).
+
+The idea to use a CRNN for distance classification was proposed by Mariam Yiwere et al. in ["Sound Source Distance Estimation Using Deep Learning: An Image Classification Approach](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6982911/). A CRNN enables the model to learn both the spectral and temporal features and relationships effectively.
+
+The CRNN model we used can be see in Figure 9. As a loss function, we used cross entropy, and the Adam optimizer was used for training.
+
+![CRNN](https://user-images.githubusercontent.com/34604921/152855814-bee08404-6166-4ebe-853a-ebefb2010f71.png "Figure 9: The CRNN used for the distance prediction task")
+As we only had the time to record two different distances (1 and 2 meters), the hope for this project was that the network at least would predict more accurately than a coin flip. Our hope was fulfilled, since the validation accuracy for this model reached 53%.
+### Conclusion and future work
+We have created 2 models for two different problem statements - that being audio classification and sound distance prediction. For these tasks, we researched existing models that solve them and adapted them for our purposes. While the results are not great, we believe that the methods we used are intuitive and correct.
+
+For future work, we would continue by attempting to tackle the different kinds of noise cancellation techniques that were researched throughout this project, such as the short-term autocorrellation method.
 
 
 
